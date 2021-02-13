@@ -38,6 +38,7 @@
 	default		First sector: leave blank
 	default last	Last sector
 	8e00		partition type code – Linux LVM
+	w		write
 	q
 
 #### setup encrypt
@@ -116,7 +117,7 @@
 	bootctl install
 
 ###### edit /boot/loader/loader.conf
-	default  arch.conf
+	default  arch
 	timeout  4
 	console-mode max
 	editor   no
@@ -129,7 +130,7 @@
 	linux   /vmlinuz-linux
 	initrd  /intel-ucode.img
 	initrd  /initramfs-linux.img
-	options rd.luks.name=UUIDofLuksPartition=encryptluks root=/dev/mapper/encryptgp-root rw resume=/dev/mapper/encryptgp-swap ipv6.disable=1 net.ifnames=0 biosdevname=0 audit=0 mds=full,nosmt apparmor=1 security=apparmor acpi_osi="!Windows 2015" rd.luks.options=discard
+	options rd.luks.name=UUIDofLuksPartition=encryptluks root=/dev/mapper/encryptgp-root rw resume=/dev/mapper/encryptgp-swap ipv6.disable=1 net.ifnames=0 biosdevname=0 audit=0
 
 ###### to get UUIDofLuksPartition
 	blkid -s UUID -o value /dev/sda2 encryptluks >> /boot/loader/entries/arch.conf
@@ -151,23 +152,11 @@
 	useradd -m -G wheel -s /usr/bin/zsh username
 	passwd username
 
-##### edit /etc/sudoers uncomment & add
+##### edit /etc/sudoers uncomment
 	wheel ALL=(ALL) ALL
-	Defaults !requiretty, !tty_tickets, !umask
-	Defaults visiblepw, path_info, insults, lecture=always
-	Defaults loglinelen=0, logfile =/var/log/sudo.log, log_year, log_host, syslog=auth
-	Defaults passwd_tries=3, passwd_timeout=1
-	Defaults env_reset, always_set_home, set_home, set_logname
-	Defaults !env_editor, editor="/usr/bin/vim:/usr/bin/vi:/usr/bin/nano"
-	Defaults timestamp_timeout=15
-	Defaults passprompt="[sudo] password for %u: "
-	Defaults lecture=never
 
 ##### set group wheel to use sudo with no password edit /etc/pam.d/sudo
 	auth           sufficient      pam_wheel.so trust use_uid
-
-##### edit /etc/pacman.conf won't upgrade packages listed
-	IgnorePkg = linux linux-headers broadcom-wl linux-api-headers
 
 ##### enable network
 	systemctl enable NetworkManager.service
